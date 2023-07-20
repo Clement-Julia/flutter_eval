@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "459333183702",
+    "project_id": "fluttur-182ab",
+    "storage_bucket": "fluttur-182ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:459333183702:android:22ef12bbfadb4b6abf4177",
+        "android_client_info": {
+          "package_name": "com.light.ipssisqy2023"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "459333183702-5sc77t9nombekldj0tkljuj5r7jrcuf8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5IUX6ua1qIufzopgXHnagW68q2FEDKZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "459333183702-5sc77t9nombekldj0tkljuj5r7jrcuf8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "459333183702-s6s6c5um00a3qro1vrk6a4sppphsamct.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.light.ipssisqy2023"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
