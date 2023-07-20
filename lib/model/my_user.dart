@@ -1,5 +1,7 @@
 
 
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ipssisqy2023/globale.dart';
 
@@ -12,6 +14,7 @@ class MyUser {
   DateTime? birthday;
   String? avatar;
   Gender genre = Gender.indefini;
+  GeoPoint? position;
   List? favoris;
 
 
@@ -56,7 +59,9 @@ class MyUser {
 
     avatar = map["AVATAR"] ?? defaultImage;
 
+    GeoPoint? geoPoint = map["POSITION"];
+    if (geoPoint != null) {
+      position = geoPoint;
+    }
   }
-
-
 }
