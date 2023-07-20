@@ -19,6 +19,7 @@ class CarteGoogle extends StatefulWidget {
 class _CarteGoogleState extends State<CarteGoogle> with SingleTickerProviderStateMixin {
   Completer<GoogleMapController> completer = Completer();
   late CameraPosition camera;
+  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
   List<MyUser> users = [];
 
   @override
@@ -34,6 +35,18 @@ class _CarteGoogleState extends State<CarteGoogle> with SingleTickerProviderStat
     setState(() {
       users = fetchedUsers;
     });
+  }
+
+  void addCustomIcon() {
+    BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/Location_marker.png")
+        .then(
+          (icon) {
+        setState(() {
+          markerIcon = icon;
+        });
+      },
+    );
   }
 
   @override
@@ -58,13 +71,10 @@ class _CarteGoogleState extends State<CarteGoogle> with SingleTickerProviderStat
           Marker(
             markerId: MarkerId(user.id),
             position: LatLng(user.position!.latitude, user.position!.longitude),
-            icon: BitmapDescriptor.fromAssetImage(
-              const ImageConfiguration(),
-              user.avatar!, // Utilisez l'URL de l'avatar de l'utilisateur ici
-            ),
+            icon: markerIcon,
             infoWindow: InfoWindow(
               title: user.fullName,
-              snippet: "Cliquez pour voir plus de détails", // Vous pouvez personnaliser le texte de l'info-bulle ici
+              snippet: "Messagerie >",
             ),
             onTap: () {
               // Navigator.push(
