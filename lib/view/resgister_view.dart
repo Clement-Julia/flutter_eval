@@ -7,6 +7,7 @@ import 'package:ipssisqy2023/controller/firestore_helper.dart';
 import 'package:ipssisqy2023/globale.dart';
 import 'package:ipssisqy2023/view/dashboard_view.dart';
 import 'package:ipssisqy2023/view/my_background.dart';
+import 'package:lottie/lottie.dart';
 
 class MyRegisterView extends StatefulWidget {
   const MyRegisterView({super.key});
@@ -74,7 +75,6 @@ class _MyRegisterViewState extends State<MyRegisterView> {
         extendBodyBehindAppBar: true,
         body:  Stack(
           children: [
-            const MyBackground(),
             SafeArea(
               child: SingleChildScrollView(
                   child : Padding(
@@ -88,13 +88,7 @@ class _MyRegisterViewState extends State<MyRegisterView> {
                                   child: Container(
                                       height : 250,
                                       width : 350,
-                                      decoration : BoxDecoration(
-                                          borderRadius : BorderRadius.circular(15),
-                                          image : const DecorationImage(
-                                              image :NetworkImage("https://tse1.mm.bing.net/th?id=OIP.zRmpjD_EOxCboGENHfjxHAHaEc&pid=Api"),
-                                              fit : BoxFit.fill
-                                          )
-                                      )
+                                      child: Lottie.asset("assets/anim_login.json"),
                                   ),
                                 ),
 
@@ -104,7 +98,7 @@ class _MyRegisterViewState extends State<MyRegisterView> {
                                   child: TextField(
                                       controller: prenom,
                                       decoration : InputDecoration(
-                                          hintText: "Entrer votre prenom",
+                                          hintText: "Entrer votre prénom",
                                           prefixIcon : const Icon(Icons.person),
                                           border : OutlineInputBorder(
                                             borderRadius : BorderRadius.circular(15),
@@ -121,7 +115,7 @@ class _MyRegisterViewState extends State<MyRegisterView> {
                                       controller: nom,
                                       decoration : InputDecoration(
                                           hintText: "Entrer votre nom",
-                                          prefixIcon : const Icon(Icons.person),
+                                          prefixIcon : const Icon(Icons.badge),
                                           border : OutlineInputBorder(
                                             borderRadius : BorderRadius.circular(15),
                                           )
@@ -136,7 +130,7 @@ class _MyRegisterViewState extends State<MyRegisterView> {
                                     controller: mail,
                                       decoration : InputDecoration(
                                           hintText: "Entrer votre adresse mail",
-                                          prefixIcon : const Icon(Icons.person),
+                                          prefixIcon : const Icon(Icons.mail),
                                           border : OutlineInputBorder(
                                             borderRadius : BorderRadius.circular(15),
 
@@ -172,7 +166,7 @@ class _MyRegisterViewState extends State<MyRegisterView> {
                                   delay: 4,
                                   child: ElevatedButton(
                                       style : ElevatedButton.styleFrom(
-                                          backgroundColor : Colors.purple,
+                                          backgroundColor : Colors.blueAccent,
                                           shape : const StadiumBorder()
                                       ),
                                       onPressed : (){
