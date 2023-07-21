@@ -1,11 +1,15 @@
 import 'dart:async';
-import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ipssisqy2023/class/FirestoreService.dart';
 import 'package:ipssisqy2023/controller/firestore_helper.dart';
+import 'package:ipssisqy2023/controller/preview_user.dart';
 import 'package:ipssisqy2023/model/my_user.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart' show ByteData, rootBundle;
+import 'dart:ui' as ui;
 
 class CarteGoogle extends StatefulWidget {
   final Position location;
@@ -19,7 +23,6 @@ class CarteGoogle extends StatefulWidget {
 class _CarteGoogleState extends State<CarteGoogle> with SingleTickerProviderStateMixin {
   Completer<GoogleMapController> completer = Completer();
   late CameraPosition camera;
-  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
   List<MyUser> users = [];
 
   @override
@@ -37,58 +40,92 @@ class _CarteGoogleState extends State<CarteGoogle> with SingleTickerProviderStat
     });
   }
 
-  void addCustomIcon() {
-    BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(), "assets/Location_marker.png")
-        .then(
-          (icon) {
-        setState(() {
-          markerIcon = icon;
-        });
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      initialCameraPosition: camera,
-      myLocationButtonEnabled: true,
-      myLocationEnabled: true,
-      markers: createMarkers(),
-      onMapCreated: (control) {
-        completer.complete(control);
+    return FutureBuilder<Set<Marker>>(
+      future: createMarkers(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasData) {
+          return GoogleMap(
+            initialCameraPosition: camera,
+            myLocationButtonEnabled: true,
+            myLocationEnabled: true,
+            markers: snapshot.data!,
+            onMapCreated: (control) {
+              completer.complete(control);
+            },
+          );
+        } else {
+          return Center(
+            child: Text("Pas de données"),
+          );
+        }
       },
     );
   }
 
-  Set<Marker> createMarkers() {
+  Future<Set<Marker>> createMarkers() async {
     Set<Marker> markers = {};
 
     for (var user in users) {
+      print(user.fullName);
+      print(user.avatar);
       if (user.position != null) {
+        BitmapDescriptor? icon;
+        if (user.avatar != null) {
+          final Uint8List imageData = await createMarkerIcon(user.avatar!, Size(120, 120));
+          icon = BitmapDescriptor.fromBytes(imageData);
+        } else {
+          print("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+          icon = BitmapDescriptor.defaultMarker;
+        }
+
         markers.add(
           Marker(
             markerId: MarkerId(user.id),
             position: LatLng(user.position!.latitude, user.position!.longitude),
-            icon: markerIcon,
+            icon: icon,
             infoWindow: InfoWindow(
               title: user.fullName,
-              snippet: "Messagerie >",
+              snippet: "Cliquez pour voir le profil",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PreviewUser(utilisateur: user),
+                  ),
+                );
+              },
             ),
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => Messagerie(user: user),
-              //   ),
-              // );
-            },
           ),
         );
       }
     }
 
     return markers;
+  }
+
+  Future<Uint8List> createMarkerIcon(String avatarUrl, Size size) async {
+    try {
+      final response = await http.get(Uri.parse(avatarUrl));
+      if (response.statusCode == 200) {
+        final byteData = ByteData.view(response.bodyBytes.buffer);
+        final codec = await ui.instantiateImageCodec(byteData.buffer.asUint8List(), targetHeight: size.height.toInt(), targetWidth: size.width.toInt());
+        final frame = await codec.getNextFrame();
+        final image = await frame.image.toByteData(format: ui.ImageByteFormat.png);
+        return image!.buffer.asUint8List();
+      } else {
+        final ByteData byteData = await rootBundle.load("assets/default_marker.png");
+        return byteData.buffer.asUint8List();
+      }
+    } catch (e) {
+      print("Erreur lors du chargement de l'image : $e");
+      final ByteData byteData = await rootBundle.load("assets/default_marker.png");
+      return byteData.buffer.asUint8List();
+    }
   }
 }
