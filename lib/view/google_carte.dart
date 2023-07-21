@@ -80,7 +80,6 @@ class _CarteGoogleState extends State<CarteGoogle> with SingleTickerProviderStat
           final Uint8List imageData = await createMarkerIcon(user.avatar!, Size(120, 120));
           icon = BitmapDescriptor.fromBytes(imageData);
         } else {
-          print("AAAAAAAAAAAAAAAAAAAAAAAAAA");
           icon = BitmapDescriptor.defaultMarker;
         }
 
@@ -91,7 +90,7 @@ class _CarteGoogleState extends State<CarteGoogle> with SingleTickerProviderStat
             icon: icon,
             infoWindow: InfoWindow(
               title: user.fullName,
-              snippet: "Cliquez pour voir le profil",
+              snippet: "Voir le profil",
               onTap: () {
                 Navigator.push(
                   context,
