@@ -17,7 +17,9 @@ class _MyMapViewState extends State<MyMapView> with SingleTickerProviderStateMix
       future: PermissionGps().init(),
       builder: (context, snap){
         if(snap.data == null){
-          return const Text("Aucune donnée");
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }else{
           Position location = snap.data!;
           return CarteGoogle(location: location);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ipssisqy2023/controller/all_utilisateur.dart';
 import 'package:ipssisqy2023/controller/mes_favoris.dart';
+import 'package:ipssisqy2023/view/conversation_view.dart';
 import 'package:ipssisqy2023/view/my_drawer.dart';
 import 'package:ipssisqy2023/view/my_map_view.dart';
 import 'package:ipssisqy2023/view/resgister_view.dart';
@@ -29,31 +30,7 @@ class _MyDashBoardViewState extends State<MyDashBoardView> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: bodyPage(),
-          ),
-          const Positioned(
-            bottom: 20,
-            right: 10,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(width: 16.0),
-                // FloatingActionButton.extended(
-                //   onPressed: (){},
-                //   heroTag: 'message',
-                //   elevation: 0,
-                //   backgroundColor: Colors.deepPurpleAccent,
-                //   label: const Text("Message"),
-                //   icon: const Icon(Icons.message_rounded),
-                // ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: bodyPage(),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: [Colors.lightBlueAccent, Colors.redAccent, Colors.green][currentIndex],
         currentIndex: currentIndex,

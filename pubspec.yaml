@@ -45,6 +45,7 @@ dependencies:
   lottie:
   google_maps_flutter:
   geolocator:
+  intl:
 
 dev_dependencies:
   flutter_test:

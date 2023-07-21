@@ -46,7 +46,6 @@ class FirestoreHelper{
      return getUser(uid);
   }
 
-
   Future<MyUser>getUser(String uid) async {
      DocumentSnapshot snapshot = await cloudUsers.doc(uid).get();
 
@@ -66,4 +65,20 @@ class FirestoreHelper{
     cloudUsers.doc(uid).set(data);
   }
 
+  sendMessage(String uid, String destinataire, String message){
+    DateTime now = DateTime.now();
+
+    cloudUsers.doc(uid).update({
+      'CONVERSATION': FieldValue.arrayUnion([
+        {
+          'message': message,
+          'sentBy': uid,
+          'sentTo': destinataire,
+          'date': now.toString()
+        },
+      ]),
+    });
+
+    return getUser(uid);
+  }
 }
