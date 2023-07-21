@@ -5,4 +5,4 @@ enum Gender {homme,femme,transgenre,indefini}
 enum MessageMenuAction {copy,edit,delete}
 
 MyUser me = MyUser.empty();
-String defaultImage = "https://tse1.mm.bing.net/th?id=OIP.zRmpjD_EOxCboGENHfjxHAHaEc&pid=Api";
+String defaultImage = "https://www.stickpng.com/assets/thumbs/585e4beacb11b227491c3399.png";

@@ -20,7 +20,7 @@ class _MyMapViewState extends State<MyMapView> with SingleTickerProviderStateMix
           return const Center(
             child: CircularProgressIndicator(),
           );
-        }else{
+        } else {
           Position location = snap.data!;
           return CarteGoogle(location: location);
         }

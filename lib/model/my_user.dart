@@ -1,7 +1,6 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ipssisqy2023/controller/firestore_helper.dart';
 import 'package:ipssisqy2023/globale.dart';
 
 class MyUser {
@@ -13,6 +12,7 @@ class MyUser {
   DateTime? birthday;
   String? avatar;
   Gender genre = Gender.indefini;
+  GeoPoint? position;
   List? favoris;
   List? conversation;
 
@@ -20,6 +20,8 @@ class MyUser {
     return prenom + " "+ nom;
   }
 
+
+  //
   MyUser.empty(){
     id = "";
     mail = "";
@@ -54,11 +56,15 @@ class MyUser {
 
     avatar = map["AVATAR"] ?? defaultImage;
     conversation = map["CONVERSATION"] ?? [];
+
+    GeoPoint? geoPoint = map["POSITION"];
+    if (geoPoint != null) {
+      position = geoPoint;
+    }
   }
 
   List<String> getUniqueRecipients() {
     final List<String> recipients = [];
-
     for (final message in me.conversation!) {
       final String recipientId = message['sentTo'];
       if (!recipients.contains(recipientId)) {
