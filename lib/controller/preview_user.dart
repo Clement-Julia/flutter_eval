@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ipssisqy2023/controller/firestore_helper.dart';
 import 'package:ipssisqy2023/globale.dart';
 import 'package:ipssisqy2023/model/my_user.dart';
+import 'package:ipssisqy2023/view/conversation_view.dart';
 
 class PreviewUser extends StatefulWidget {
   final MyUser utilisateur;
@@ -127,7 +128,14 @@ class _PreviewUserState extends State<PreviewUser> {
                       ),
                       const SizedBox(width: 16.0),
                       FloatingActionButton.extended(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ConversationPage(uuid: widget.utilisateur.id)
+                            ),
+                          );
+                        },
                         heroTag: 'message',
                         elevation: 0,
                         backgroundColor: Colors.deepPurpleAccent,

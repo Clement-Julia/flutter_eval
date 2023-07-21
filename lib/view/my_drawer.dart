@@ -47,11 +47,8 @@ class _MyDrawerState extends State<MyDrawer> {
                    Map<String,dynamic> map = {
                      "AVATAR": me.avatar
                    };
-                   //mettre à jour les informations de l'utilisateur
+
                    FirestoreHelper().updateUser(me.id, map);
-
-
-
                    Navigator.pop(context);
 
                  }, child: const Text("Enregistrement")

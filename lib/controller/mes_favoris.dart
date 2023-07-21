@@ -29,57 +29,88 @@ class _MyFavoritesState extends State<MyFavorites> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: maListeAmis.length,
-        itemBuilder: (context,index){
-          MyUser otherUser = maListeAmis[index];
-          if(me.id == otherUser.id){
-            return Container();
-          } else {
-            return Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              color: Colors.redAccent,
-              child: ListTile(
-                leading: Container(
-                  height: 120,
-                  width: 120,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          image: NetworkImage(otherUser.avatar ?? defaultImage),
-                          fit: BoxFit.fill
-                      )
-                  ),
-                ),
-                title: Text(otherUser.fullName),
-                subtitle: Text(otherUser.mail),
-                trailing: IconButton(
-                    icon: Icon(Icons.heart_broken ,color: (me.favoris!.contains(otherUser.id))?Colors.brown:Colors.grey,),
-                    onPressed: (){
-                      setState(() {
-                          me.favoris!.remove(otherUser.id);
-                          Map<String,dynamic> map = {
-                            "FAVORIS": me.favoris
-                          };
-                          FirestoreHelper().updateUser(me.id, map);
-                          maListeAmis.remove(otherUser);
-                      });
-                    }
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PreviewUser(utilisateur: otherUser),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: ListView.builder(
+              itemCount: maListeAmis.length,
+              itemBuilder: (context,index){
+                MyUser otherUser = maListeAmis[index];
+                if(me.id == otherUser.id){
+                  return Container();
+                } else {
+                  return Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    color: Colors.redAccent,
+                    child: ListTile(
+                      leading: Container(
+                        height: 120,
+                        width: 120,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                image: NetworkImage(otherUser.avatar ?? defaultImage),
+                                fit: BoxFit.fill
+                            )
+                        ),
+                      ),
+                      title: Text(otherUser.fullName),
+                      subtitle: Text(otherUser.mail),
+                      trailing: IconButton(
+                          icon: Icon(Icons.heart_broken ,color: (me.favoris!.contains(otherUser.id))?Colors.brown:Colors.grey,),
+                          onPressed: (){
+                            setState(() {
+                                me.favoris!.remove(otherUser.id);
+                                Map<String,dynamic> map = {
+                                  "FAVORIS": me.favoris
+                                };
+                                FirestoreHelper().updateUser(me.id, map);
+                                maListeAmis.remove(otherUser);
+                            });
+                          }
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PreviewUser(utilisateur: otherUser),
+                          ),
+                        );
+                      },
                     ),
                   );
-                },
-              ),
-            );
-          }
+                }
 
-        }
+              }
+          ),
+        ),
+        Positioned(
+          bottom: 20,
+          right: 10,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 16.0),
+              FloatingActionButton.extended(
+                onPressed: (){
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => ConversationPage(uid: 'izOvefSVbkSgV6QT1oJ0nBrNSpz1')
+                  //   ),
+                  // );
+                },
+                heroTag: 'message',
+                elevation: 0,
+                backgroundColor: Colors.deepPurpleAccent,
+                label: const Text("Message"),
+                icon: const Icon(Icons.message_rounded),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

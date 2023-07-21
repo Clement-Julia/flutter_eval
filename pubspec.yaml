@@ -45,6 +45,7 @@ dependencies:
   lottie:
   google_maps_flutter:
   geolocator:
+  intl:
   custom_marker: ^1.0.0
   http: ^1.1.0
   cached_network_image: ^3.2.3

@@ -1,7 +1,5 @@
 
 
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ipssisqy2023/globale.dart';
 
@@ -16,8 +14,7 @@ class MyUser {
   Gender genre = Gender.indefini;
   GeoPoint? position;
   List? favoris;
-
-
+  List? conversation;
 
   String get fullName {
     return prenom + " "+ nom;
@@ -58,10 +55,37 @@ class MyUser {
       }
 
     avatar = map["AVATAR"] ?? defaultImage;
+    conversation = map["CONVERSATION"] ?? [];
 
     GeoPoint? geoPoint = map["POSITION"];
     if (geoPoint != null) {
       position = geoPoint;
     }
+  }
+
+  List<String> getUniqueRecipients() {
+    final List<String> recipients = [];
+    for (final message in me.conversation!) {
+      final String recipientId = message['sentTo'];
+      if (!recipients.contains(recipientId)) {
+        recipients.add(recipientId);
+      }
+    }
+    return recipients;
+  }
+
+  Future<String?> getLastMessageWithRecipient(String recipientId) async {
+    MyUser user = await FirestoreHelper().getUser(recipientId);
+    final List<dynamic> allMessages = [...user.conversation!, ...me.conversation!];
+    final List<dynamic> recipientMessages = allMessages
+        .where((message) => message['sentBy'] == recipientId || message['sentTo'] == recipientId)
+        .toList();
+
+    if (recipientMessages.isEmpty) {
+      return null;
+    }
+
+    recipientMessages.sort((a, b) => b['date'].compareTo(a['date']));
+    return recipientMessages.first['message'];
   }
 }
