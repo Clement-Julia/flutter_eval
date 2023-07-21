@@ -21,7 +21,7 @@ class _MyBackgroundState extends State<MyBackground> with SingleTickerProviderSt
         decoration: const BoxDecoration(
           image: DecorationImage(
             // image: AssetImage("assets/undetale.jpg"),
-            image: NetworkImage("https://img.freepik.com/free-vector/abstract-dirty-grunge-tire-marks_1017-17011.jpg?w=2000"),
+            image: AssetImage("assets/black_rectangle.png"),
             fit: BoxFit.fill
           )
         ),
