@@ -92,27 +92,29 @@ class _ConversationPageState extends State<ConversationPage> {
                     });
                   },
                   onLongPress: () {
-                    final RenderBox box = messageKey.currentContext!.findRenderObject() as RenderBox;
-                    final position = box.localToGlobal(Offset.zero);
+                      if(isSentByMe) {
+                        final RenderBox box = messageKey.currentContext!.findRenderObject() as RenderBox;
+                        final position = box.localToGlobal(Offset.zero);
 
-                    setState(() {
-                      _messageMenuController.selectedIndex = index;
-                    });
+                        setState(() {
+                          _messageMenuController.selectedIndex = index;
+                        });
 
-                    final menuItems = _buildMessageContextMenuItems(messageData, index);
-                    showMenu(
-                      context: context,
-                      position: RelativeRect.fromLTRB(
-                        position.dx,
-                        position.dy,
-                        position.dx + box.size.width,
-                        position.dy + box.size.height,
-                      ),
-                      items: menuItems,
-                      elevation: 8,
-                    ).then((value) {
-                      _messageMenuController.closeMenu();
-                    });
+                        final menuItems = _buildMessageContextMenuItems(message, index);
+                        showMenu(
+                          context: context,
+                          position: RelativeRect.fromLTRB(
+                            position.dx + box.size.width,
+                            position.dy - (box.size.height * 3),
+                            (position.dx + box.size.width) + 100,
+                            position.dy + box.size.height,
+                          ),
+                          items: menuItems,
+                          elevation: 8,
+                        ).then((value) {
+                          _messageMenuController.closeMenu();
+                        });
+                      }
                   },
                   child: Column(
                     children: [
@@ -131,16 +133,6 @@ class _ConversationPageState extends State<ConversationPage> {
                             ),
                           ),
                         ),
-                        // trailing: isSentByMe ? PopupMenuButton<MessageOption>(
-                        //   itemBuilder: (context) => [
-                        //     const PopupMenuItem(value: MessageOption.copy,child: Text('Copier')),
-                        //     const PopupMenuItem(value: MessageOption.edit,child: Text('Modifier')),
-                        //     const PopupMenuItem(value: MessageOption.delete,child: Text('Supprimer')),
-                        //   ],
-                        //   onSelected: (option) {
-                        //     _onMessageOptionSelected(option, message, index);
-                        //   },
-                        // ) : null,
                       ),
                       if (_selectedMessageIndex == index)
                         Align(
@@ -205,25 +197,25 @@ class _ConversationPageState extends State<ConversationPage> {
     });
   }
 
-  void _onMessageOptionSelected(MessageOption option, String message, int index) {
-    if (option == MessageOption.edit) {
-      setState(() {
-        _selectedMessageIndex = index;
-      });
-      _showEditMessageDialog(message);
-    } else {
-      switch (option) {
-        case MessageOption.edit:
-          break;
-        case MessageOption.copy:
-          Clipboard.setData(ClipboardData(text: message));
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Message copié dans le presse-papiers')),
-          );
-          break;
-        case MessageOption.delete:
-          break;
-      }
+  void _onMessageOptionSelected(MessageMenuAction option, String message, int index) {
+    switch (option) {
+      case MessageMenuAction.copy:
+        Clipboard.setData(ClipboardData(text: message));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Message copié dans le presse-papiers')),
+        );
+        break;
+      case MessageMenuAction.edit:
+        setState(() {
+          _selectedMessageIndex = index;
+        });
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _showEditMessageDialog(message);
+        });
+        break;
+      case MessageMenuAction.delete:
+        _deleteMessage(index);
+        break;
     }
   }
 
@@ -273,26 +265,69 @@ class _ConversationPageState extends State<ConversationPage> {
     }
   }
 
-  List<PopupMenuEntry<MessageOption>> _buildMessageContextMenuItems(Map<String, dynamic> messageData, int index) {
-    final List<PopupMenuEntry<MessageOption>> menuItems = [];
+  void _deleteMessage(int index) async {
+    final deletedMessage = _conversationMessages.removeAt(index);
+    final myMessages = _conversationMessages.where((message) => message['sentBy'] == me.id).toList();
+
+    Map<String, dynamic> map = {
+      "CONVERSATION": myMessages
+    };
+
+    try {
+      await FirestoreHelper().updateUser(me.id, map);
+      me.conversation = myMessages;
+      _loadUserAndConversation();
+    } catch (error) {
+      _conversationMessages.insert(index, deletedMessage);
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Une erreur est survenue'),
+              content: const Text("Votre message n'a pas pu être supprimé"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          }
+      );
+    }
+  }
+
+  List<PopupMenuEntry<MessageMenuAction>> _buildMessageContextMenuItems(String message, int index) {
+    final List<PopupMenuEntry<MessageMenuAction>> menuItems = [];
 
     if (_messageMenuController.selectedIndex == index) {
       menuItems.add(
-        const PopupMenuItem<MessageOption>(
-          value: MessageOption.copy,
-          child: Text('Copier'),
+        PopupMenuItem<MessageMenuAction>(
+          value: MessageMenuAction.copy,
+          child: const Text('Copier'),
+          onTap: () {
+            _onMessageOptionSelected(MessageMenuAction.copy, message, index);
+          },
         ),
       );
       menuItems.add(
-        const PopupMenuItem<MessageOption>(
-          value: MessageOption.edit,
-          child: Text('Modifier'),
+        PopupMenuItem<MessageMenuAction>(
+          value: MessageMenuAction.edit,
+          child: const Text('Modifier'),
+          onTap: () {
+            _onMessageOptionSelected(MessageMenuAction.edit, message, index);
+          },
         ),
       );
       menuItems.add(
-        const PopupMenuItem<MessageOption>(
-          value: MessageOption.delete,
-          child: Text('Supprimer'),
+        PopupMenuItem<MessageMenuAction>(
+          value: MessageMenuAction.delete,
+          child: const Text('Supprimer'),
+          onTap: () {
+            _onMessageOptionSelected(MessageMenuAction.delete, message, index);
+          },
         ),
       );
     }
