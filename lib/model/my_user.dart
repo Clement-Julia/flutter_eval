@@ -1,6 +1,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ipssisqy2023/controller/firestore_helper.dart';
 import 'package:ipssisqy2023/globale.dart';
 
 class MyUser {

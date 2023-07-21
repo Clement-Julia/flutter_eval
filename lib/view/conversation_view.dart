@@ -41,6 +41,8 @@ class _ConversationPageState extends State<ConversationPage> {
     _updateConversationMessages(mergedMessages);
     setState(() {
       _user = user;
+      print("AAAAAAAAAAAAA");
+      print(_user.avatar);
     });
   }
 
